@@ -1,0 +1,14 @@
+{
+  "name": "demo-nodejs-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch",
+    "dev": "nodemon dist/server.js",
+    "start": "node dist/server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
