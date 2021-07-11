@@ -6,5 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const constants_1 = require("./config/constants");
 const app = express_1.default();
+app.get("/", (_, res) => {
+    res.send("hello World");
+});
 app.listen(constants_1.PORT, () => console.log("server started at PORT : ", constants_1.PORT));
 //# sourceMappingURL=server.js.map

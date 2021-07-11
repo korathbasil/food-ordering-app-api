@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/mongodb": "^3.6.20",
     "express": "^4.17.1",
     "mongodb": "^3.6.10"
   },
