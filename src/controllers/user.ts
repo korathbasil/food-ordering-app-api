@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 
 import getDb from "../config/dbConnection";
 
@@ -21,5 +21,22 @@ export default {
     } catch (err) {
       return console.error(err);
     }
+  },
+  login: async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const user = await getDb()?.collection("users").findOne({ email });
+    if (!user) {
+      return res.send("User not found");
+    }
+    const isPasswordsMatch = await compare(password, user.password);
+    if (!isPasswordsMatch) return res.send("Incorrect Password");
+    return res.json({
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+    });
   },
 };

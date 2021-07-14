@@ -33,5 +33,23 @@ exports.default = {
             return console.error(err);
         }
     }),
+    login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        var _c;
+        const { email, password } = req.body;
+        const user = yield ((_c = dbConnection_1.default()) === null || _c === void 0 ? void 0 : _c.collection("users").findOne({ email }));
+        if (!user) {
+            return res.send("User not found");
+        }
+        const isPasswordsMatch = yield bcryptjs_1.compare(password, user.password);
+        if (!isPasswordsMatch)
+            return res.send("Incorrect Password");
+        return res.json({
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name,
+            },
+        });
+    }),
 };
 //# sourceMappingURL=user.js.map
