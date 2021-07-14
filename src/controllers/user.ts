@@ -1,14 +1,23 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { hash, compare } from "bcryptjs";
 
 import getDb from "../config/dbConnection";
+// import BaseError from "../utils/BaseError";
+import ResponseError from "../utils/ResponseError";
 
 export default {
-  signup: async (req: Request, res: Response) => {
+  signup: async (req: Request, res: Response, next: NextFunction) => {
     const { email, name, password } = req.body;
     const user = await getDb()?.collection("users").findOne({ email });
     if (user) {
-      return res.send("Email already exists");
+      // return res.send("Email already exists");
+      // return next({ status: 500, message: "Email already exists" });
+
+      // throw new Error("Email already exists");
+      // return next(new BaseError(500, "Email already exists"));
+      // return next({ message: "Hello" });
+      // return next(new ResponseError(300, "Already Exists"));
+      return res.status(500).json(new ResponseError(300, "Hello"));
     }
     try {
       const hashedPassword = await hash(password, 10);

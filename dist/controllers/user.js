@@ -14,13 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = require("bcryptjs");
 const dbConnection_1 = __importDefault(require("../config/dbConnection"));
+const ResponseError_1 = __importDefault(require("../utils/ResponseError"));
 exports.default = {
-    signup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    signup: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
         const { email, name, password } = req.body;
         const user = yield ((_a = dbConnection_1.default()) === null || _a === void 0 ? void 0 : _a.collection("users").findOne({ email }));
         if (user) {
-            return res.send("Email already exists");
+            return res.status(500).json(new ResponseError_1.default(300, "Hello"));
         }
         try {
             const hashedPassword = yield bcryptjs_1.hash(password, 10);
