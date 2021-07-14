@@ -45,11 +45,15 @@ exports.default = {
         const { email, password } = req.body;
         const user = yield ((_c = dbConnection_1.default()) === null || _c === void 0 ? void 0 : _c.collection("users").findOne({ email }));
         if (!user) {
-            return res.send("User not found");
+            return res
+                .status(ResponseCodes_1.default.NOT_FOUND)
+                .json(new ResponseError_1.default(ResponseCodes_1.default.NOT_FOUND, "User not found"));
         }
         const isPasswordsMatch = yield bcryptjs_1.compare(password, user.password);
         if (!isPasswordsMatch)
-            return res.send("Incorrect Password");
+            return res
+                .status(ResponseCodes_1.default.FORBIDDEN)
+                .json(new ResponseError_1.default(ResponseCodes_1.default.FORBIDDEN, "incorrect password"));
         return res.json({
             user: {
                 id: user._id,

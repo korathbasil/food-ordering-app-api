@@ -45,10 +45,17 @@ export default {
 
     const user = await getDb()?.collection("users").findOne({ email });
     if (!user) {
-      return res.send("User not found");
+      return res
+        .status(ResponseCodes.NOT_FOUND)
+        .json(new ResponseError(ResponseCodes.NOT_FOUND, "User not found"));
     }
+
     const isPasswordsMatch = await compare(password, user.password);
-    if (!isPasswordsMatch) return res.send("Incorrect Password");
+    if (!isPasswordsMatch)
+      return res
+        .status(ResponseCodes.FORBIDDEN)
+        .json(new ResponseError(ResponseCodes.FORBIDDEN, "incorrect password"));
+
     return res.json({
       user: {
         id: user._id,
