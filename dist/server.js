@@ -9,10 +9,15 @@ const dbConnection_1 = require("./config/dbConnection");
 const user_1 = __importDefault(require("./routes/user"));
 const app = express_1.default();
 app.use(express_1.default.json());
+const errorHandler = (err, _, res) => {
+    res.status(500);
+    res.render("error", { error: err });
+};
 app.use("/api/user", user_1.default);
 app.get("/", (_, res) => {
     res.send("hello World");
 });
+app.use(errorHandler);
 dbConnection_1.connectToDatabase((err, _) => {
     if (err)
         console.log(err);
