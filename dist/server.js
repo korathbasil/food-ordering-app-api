@@ -6,7 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const constants_1 = require("./config/constants");
 const dbConnection_1 = require("./config/dbConnection");
+const user_1 = __importDefault(require("./routes/user"));
 const app = express_1.default();
+app.use(express_1.default.json());
+app.use("/api/user", user_1.default);
 app.get("/", (_, res) => {
     res.send("hello World");
 });
