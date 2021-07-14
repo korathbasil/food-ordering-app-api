@@ -15,24 +15,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = require("bcryptjs");
 const dbConnection_1 = __importDefault(require("../config/dbConnection"));
 const ResponseError_1 = __importDefault(require("../utils/ResponseError"));
+const ResponseCodes_1 = __importDefault(require("../utils/ResponseCodes"));
 exports.default = {
-    signup: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    signup: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _a, _b;
         const { email, name, password } = req.body;
         const user = yield ((_a = dbConnection_1.default()) === null || _a === void 0 ? void 0 : _a.collection("users").findOne({ email }));
         if (user) {
-            return res.status(500).json(new ResponseError_1.default(300, "Hello"));
+            return res
+                .status(ResponseCodes_1.default.CONFLICT)
+                .json(new ResponseError_1.default(ResponseCodes_1.default.CONFLICT, "Email already exists"));
         }
-        try {
-            const hashedPassword = yield bcryptjs_1.hash(password, 10);
-            const newUser = yield ((_b = dbConnection_1.default()) === null || _b === void 0 ? void 0 : _b.collection("users").insertOne({ email, name, password: hashedPassword }));
-            if (newUser)
-                return res.send(newUser.ops[0]);
-            res.send("SAving User failed");
-        }
-        catch (err) {
-            return console.error(err);
-        }
+        const hashedPassword = yield bcryptjs_1.hash(password, 10);
+        const newUser = yield ((_b = dbConnection_1.default()) === null || _b === void 0 ? void 0 : _b.collection("users").insertOne({ email, name, password: hashedPassword }));
+        if (newUser)
+            return res.status(ResponseCodes_1.default.CREATED).json({
+                user: {
+                    id: newUser.ops[0]._id,
+                    email: newUser.ops[0].email,
+                    name: newUser.ops[0].name,
+                },
+            });
+        return res
+            .status(ResponseCodes_1.default.SERVICE_UNAVAILABLE)
+            .json(new ResponseError_1.default(ResponseCodes_1.default.SERVICE_UNAVAILABLE, "Unalble to perform action"));
     }),
     login: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _c;

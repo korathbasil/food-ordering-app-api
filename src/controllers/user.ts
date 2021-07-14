@@ -1,35 +1,44 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { hash, compare } from "bcryptjs";
 
 import getDb from "../config/dbConnection";
-// import BaseError from "../utils/BaseError";
 import ResponseError from "../utils/ResponseError";
+import ResponseCodes from "../utils/ResponseCodes";
 
 export default {
-  signup: async (req: Request, res: Response, next: NextFunction) => {
+  signup: async (req: Request, res: Response) => {
     const { email, name, password } = req.body;
+
     const user = await getDb()?.collection("users").findOne({ email });
     if (user) {
-      // return res.send("Email already exists");
-      // return next({ status: 500, message: "Email already exists" });
-
-      // throw new Error("Email already exists");
-      // return next(new BaseError(500, "Email already exists"));
-      // return next({ message: "Hello" });
-      // return next(new ResponseError(300, "Already Exists"));
-      return res.status(500).json(new ResponseError(300, "Hello"));
+      return res
+        .status(ResponseCodes.CONFLICT)
+        .json(
+          new ResponseError(ResponseCodes.CONFLICT, "Email already exists")
+        );
     }
-    try {
-      const hashedPassword = await hash(password, 10);
-      const newUser = await getDb()
-        ?.collection("users")
-        .insertOne({ email, name, password: hashedPassword });
 
-      if (newUser) return res.send(newUser.ops[0]);
-      res.send("SAving User failed");
-    } catch (err) {
-      return console.error(err);
-    }
+    const hashedPassword = await hash(password, 10);
+    const newUser = await getDb()
+      ?.collection("users")
+      .insertOne({ email, name, password: hashedPassword });
+    if (newUser)
+      return res.status(ResponseCodes.CREATED).json({
+        user: {
+          id: newUser.ops[0]._id,
+          email: newUser.ops[0].email,
+          name: newUser.ops[0].name,
+        },
+      });
+
+    return res
+      .status(ResponseCodes.SERVICE_UNAVAILABLE)
+      .json(
+        new ResponseError(
+          ResponseCodes.SERVICE_UNAVAILABLE,
+          "Unalble to perform action"
+        )
+      );
   },
   login: async (req: Request, res: Response) => {
     const { email, password } = req.body;
