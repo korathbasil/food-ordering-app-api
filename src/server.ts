@@ -4,12 +4,15 @@ import { PORT } from "./config/constants";
 import { connectToDatabase } from "./config/dbConnection";
 
 import userRoute from "./routes/user";
+import restaurantRoute from "./routes/restaurant";
 
 const app = express();
 
 app.use(express.json());
 
 app.use("/api/user", userRoute);
+
+app.use("/api/restaurant", restaurantRoute);
 
 app.get("/", (_, res) => {
   res.send("hello World");

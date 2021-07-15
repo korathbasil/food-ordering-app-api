@@ -8,12 +8,14 @@ let db: Db | null = null;
 export const connectToDatabase = (
   cb: (err: MongoError | null, db: Db | null) => void
 ) => {
-  const client = new MongoClient(DB_CONNECTION_URL);
+  const client = new MongoClient(DB_CONNECTION_URL, {
+    useUnifiedTopology: true,
+  });
 
   client.connect((err, data) => {
     if (err) cb(err, null);
     else {
-      db = data.db("movie-app");
+      db = data.db("food-ordering-app");
       cb(null, db);
     }
   });
