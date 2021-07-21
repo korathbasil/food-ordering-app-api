@@ -4,6 +4,7 @@ import { hash } from "bcryptjs";
 import getDb from "../config/dbConnection";
 import ResponseError from "../utils/ResponseError";
 import ResponseCodes from "../utils/ResponseCodes";
+import { ObjectID } from "mongodb";
 
 export default {
   show: async (_: Request, res: Response) => {
@@ -41,7 +42,20 @@ export default {
           )
         );
     return res.status(ResponseCodes.CREATED).json({
-      admin: { id: newAdmin.ops[0]._Id, username: newAdmin.ops[0].username },
+      admin: { id: newAdmin.ops[0]._id, username: newAdmin.ops[0].username },
     });
+  },
+  remove: async (req: Request, res: Response) => {
+    const admin = await getDb()?.collection("admin").findOne({});
+    if (!admin)
+      return res
+        .status(ResponseCodes.NOT_FOUND)
+        .json(new ResponseError(ResponseCodes.NOT_FOUND, "Admin not exists"));
+    const { id } = req.body;
+    return getDb()
+      ?.collection("admin")
+      .findOneAndDelete({ _id: new ObjectID(id) })
+      .then(() => res.status(203).json({ message: "Admin deleted" }))
+      .catch((err) => res.status(405).json({ err: err }));
   },
 };
