@@ -9,7 +9,6 @@ import { ObjectID } from "mongodb";
 export default {
   show: async (_: Request, res: Response) => {
     const admin = await getDb()?.collection("admin").findOne({});
-    console.log(admin);
     if (!admin)
       return res
         .status(ResponseCodes.NOT_FOUND)
@@ -18,6 +17,7 @@ export default {
       .status(ResponseCodes.OK)
       .json({ admin: { id: admin._id, username: admin.username } });
   },
+
   create: async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -28,6 +28,7 @@ export default {
         .json(
           new ResponseError(ResponseCodes.CONFLICT, "Admin already exists")
         );
+
     const hashedPasssword = await hash(password, 10);
     const newAdmin = await getDb()
       ?.collection("admin")
@@ -41,16 +42,19 @@ export default {
             "Unalble to perform action"
           )
         );
+
     return res.status(ResponseCodes.CREATED).json({
       admin: { id: newAdmin.ops[0]._id, username: newAdmin.ops[0].username },
     });
   },
+
   remove: async (req: Request, res: Response) => {
     const admin = await getDb()?.collection("admin").findOne({});
     if (!admin)
       return res
         .status(ResponseCodes.NOT_FOUND)
         .json(new ResponseError(ResponseCodes.NOT_FOUND, "Admin not exists"));
+
     const { id } = req.body;
     return getDb()
       ?.collection("admin")
