@@ -8,6 +8,6 @@ router.post("/create", adminController.create);
 
 router.get("/show", adminController.show);
 
-router.delete("/remove", adminController.show);
+router.delete("/remove", adminController.remove);
 
 export default router;
