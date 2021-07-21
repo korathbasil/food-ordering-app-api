@@ -6,6 +6,6 @@ const router = Router();
 
 router.post("/create", adminController.create);
 
-router.get("/show", adminController.create);
+router.get("/show", adminController.show);
 
 export default router;

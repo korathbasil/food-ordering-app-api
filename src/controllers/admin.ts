@@ -6,6 +6,17 @@ import ResponseError from "../utils/ResponseError";
 import ResponseCodes from "../utils/ResponseCodes";
 
 export default {
+  show: async (_: Request, res: Response) => {
+    const admin = await getDb()?.collection("admin").findOne({});
+    console.log(admin);
+    if (!admin)
+      return res
+        .status(ResponseCodes.NOT_FOUND)
+        .json(new ResponseError(ResponseCodes.NOT_FOUND, "Admin not exists"));
+    return res
+      .status(ResponseCodes.OK)
+      .json({ admin: { id: admin._id, username: admin.username } });
+  },
   create: async (req: Request, res: Response) => {
     const { username, password } = req.body;
 
@@ -18,7 +29,7 @@ export default {
         );
     const hashedPasssword = await hash(password, 10);
     const newAdmin = await getDb()
-      ?.collection("users")
+      ?.collection("admin")
       .insertOne({ username, paswword: hashedPasssword });
     if (!newAdmin)
       return res
@@ -29,10 +40,8 @@ export default {
             "Unalble to perform action"
           )
         );
-    return res
-      .status(ResponseCodes.CREATED)
-      .json({
-        admin: { id: newAdmin.ops[0]._Id, username: newAdmin.ops[0].username },
-      });
+    return res.status(ResponseCodes.CREATED).json({
+      admin: { id: newAdmin.ops[0]._Id, username: newAdmin.ops[0].username },
+    });
   },
 };
