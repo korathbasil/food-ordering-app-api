@@ -10,4 +10,6 @@ router.get("/show", adminController.show);
 
 router.delete("/remove", adminController.remove);
 
+router.post("/add-restaurant", adminController.addRestaurant);
+
 export default router;

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { hash } from "bcryptjs";
+import { ObjectID } from "mongodb";
 
 import getDb from "../config/dbConnection";
 import ResponseError from "../utils/ResponseError";
 import ResponseCodes from "../utils/ResponseCodes";
-import { ObjectID } from "mongodb";
 
 export default {
   show: async (_: Request, res: Response) => {
@@ -61,5 +61,25 @@ export default {
       .findOneAndDelete({ _id: new ObjectID(id) })
       .then(() => res.status(203).json({ message: "Admin deleted" }))
       .catch((err) => res.status(405).json({ err: err }));
+  },
+
+  addRestaurant: async (req: Request, res: Response) => {
+    const { name, email, address, ownerName, ownerEmail } = req.body;
+
+    const newRestaurant = await getDb()
+      ?.collection("restaurants")
+      .insertOne({
+        name,
+        email,
+        address,
+        owner: { name: ownerName, email: ownerEmail },
+      });
+    if (!newRestaurant)
+      return res
+        .status(404)
+        .json(new ResponseError(404, "Can't perform action"));
+    return res
+      .status(ResponseCodes.CREATED)
+      .json({ restaurant: newRestaurant.ops[0] });
   },
 };
