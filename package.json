@@ -1,5 +1,5 @@
 {
-  "name": "demo-nodejs-typescript",
+  "name": "food-ordering-app",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
